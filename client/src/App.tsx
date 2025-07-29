@@ -20,6 +20,7 @@ import AdminDashboard from "@/pages/admin/dashboard";
 import AdminJobs from "@/pages/admin/jobs";
 import AdminApplications from "@/pages/admin/applications";
 import AdminStudents from "@/pages/admin/students";
+import AdminGrievances from "@/pages/admin/grievances";
 import Grievance from "@/pages/grievance";
 
 function Navigation() {
@@ -195,6 +196,13 @@ function Router() {
         <Route path="/admin/students">
           {isAuthenticated && isAdmin ? (
             <AdminStudents />
+          ) : (
+            <div>Access denied</div>
+          )}
+        </Route>
+        <Route path="/admin/grievances">
+          {isAuthenticated && isAdmin ? (
+            <AdminGrievances />
           ) : (
             <div>Access denied</div>
           )}

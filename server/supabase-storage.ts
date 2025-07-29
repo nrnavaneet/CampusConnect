@@ -305,10 +305,10 @@ export class SupabaseStorage {
     return data || [];
   }
 
-  async updateGrievanceStatus(id: string, status: string): Promise<Grievance> {
+  async updateGrievanceStatus(id: string, updateData: { status?: string; response?: string }): Promise<Grievance> {
     const { data: grievance, error } = await supabase
       .from('grievances')
-      .update({ status })
+      .update(updateData)
       .eq('id', id)
       .select()
       .single();

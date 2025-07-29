@@ -97,14 +97,25 @@ export default function StudentJobs() {
     });
 
   // Categorize jobs
-  const activeJobs = filteredJobs.filter(job => new Date(job.deadline) > new Date());
+  const now = new Date();
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  
+  const activeJobs = filteredJobs.filter(job => 
+    job.isActive && new Date(job.deadline) > now
+  );
+  
+  const recentJobs = filteredJobs.filter(job => 
+    job.isActive && new Date(job.deadline) <= now && new Date(job.deadline) >= thirtyDaysAgo
+  );
+  
   const ongoingJobs = filteredJobs.filter(job => {
     // Jobs with applications in progress
     return applications.some(app => app.jobId === job.id && 
       ['applied', 'under_review', 'shortlisted', 'interviewed'].includes(app.status));
   });
+  
   const upcomingJobs = filteredJobs.filter(job => {
-    // Jobs with future start dates (mock logic)
+    // Jobs with future deadlines (more than 7 days from now)
     return new Date(job.deadline) > new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   });
 
@@ -175,12 +186,15 @@ export default function StudentJobs() {
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 overflow-hidden">
           <Tabs defaultValue="active" className="w-full">
             <div className="border-b border-gray-200 dark:border-slate-700">
-              <TabsList className="grid w-full grid-cols-3 bg-transparent">
+              <TabsList className="grid w-full grid-cols-4 bg-transparent">
                 <TabsTrigger value="active" className="data-[state=active]:border-b-2 data-[state=active]:border-primary">
                   Active ({activeJobs.length})
                 </TabsTrigger>
+                <TabsTrigger value="recent" className="data-[state=active]:border-b-2 data-[state=active]:border-primary">
+                  Recent ({recentJobs.length})
+                </TabsTrigger>
                 <TabsTrigger value="ongoing" className="data-[state=active]:border-b-2 data-[state=active]:border-primary">
-                  Ongoing ({ongoingJobs.length})
+                  Applied ({ongoingJobs.length})
                 </TabsTrigger>
                 <TabsTrigger value="upcoming" className="data-[state=active]:border-b-2 data-[state=active]:border-primary">
                   Upcoming ({upcomingJobs.length})
@@ -202,6 +216,31 @@ export default function StudentJobs() {
               ) : (
                 <div className="space-y-6">
                   {activeJobs.map((job) => (
+                    <JobCard
+                      key={job.id}
+                      job={job}
+                      student={student}
+                      onViewDetails={handleViewDetails}
+                      onApply={handleApply}
+                      hasApplied={appliedJobIds.has(job.id)}
+                    />
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="recent" className="p-6">
+              {recentJobs.length === 0 ? (
+                <div className="text-center py-12 text-gray-500">
+                  <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Search className="w-8 h-8 text-gray-400" />
+                  </div>
+                  <p className="text-lg mb-2">No recent jobs found</p>
+                  <p className="text-sm">Recently closed jobs will appear here</p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {recentJobs.map((job) => (
                     <JobCard
                       key={job.id}
                       job={job}

@@ -15,7 +15,8 @@ import {
   Plus,
   Settings,
   BarChart3,
-  UserCheck
+  UserCheck,
+  MessageSquare
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -29,7 +30,6 @@ interface DashboardStats {
   totalStudents: number;
   totalJobs: number;
   totalApplications: number;
-  activeJobs: number;
   placedStudents: number;
   pendingApplications: number;
 }
@@ -76,7 +76,6 @@ export default function AdminDashboard() {
     totalStudents: 0,
     totalJobs: 0,
     totalApplications: 0,
-    activeJobs: 0,
     placedStudents: 0,
     pendingApplications: 0
   };
@@ -152,6 +151,12 @@ export default function AdminDashboard() {
             Students
           </Button>
         </Link>
+        <Link href="/admin/grievances">
+          <Button variant="ghost" size="sm" className="gap-2">
+            <MessageSquare className="w-4 h-4" />
+            Grievances
+          </Button>
+        </Link>
         <Button variant="ghost" size="sm" className="gap-2">
           <Settings className="w-4 h-4" />
           Settings
@@ -159,7 +164,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         <Card className="hover:shadow-md transition-shadow border-l-4 border-l-blue-500">
           <CardContent className="p-4">
             <div className="flex flex-col space-y-2">
@@ -203,22 +208,6 @@ export default function AdminDashboard() {
               <div className="space-y-1">
                 <p className="text-xs text-muted-foreground font-medium">Applications</p>
                 <p className="text-xl font-bold">{statsLoading ? "..." : stats.totalApplications}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="hover:shadow-md transition-shadow border-l-4 border-l-purple-500">
-          <CardContent className="p-4">
-            <div className="flex flex-col space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                  <TrendingUp className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                </div>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs text-muted-foreground font-medium">Active Jobs</p>
-                <p className="text-xl font-bold">{statsLoading ? "..." : stats.activeJobs}</p>
               </div>
             </div>
           </CardContent>
