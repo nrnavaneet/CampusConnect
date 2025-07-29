@@ -541,7 +541,41 @@ router.get("/api/admin/activities", requireAdmin, async (req, res) => {
 
 router.get("/api/admin/students", requireAdmin, async (req, res) => {
   try {
-    const students = await storage.getAllStudentDetails();
+    const studentsData = await storage.getAllStudentDetails();
+    const allApplications = await storage.getAllApplications();
+    
+    // Transform the data to match frontend expectations using snake_case from database
+    const students = studentsData.map(student => {
+      // Get applications count for this student
+      const studentApplications = allApplications.filter(app => app.studentId === student.id);
+      const placedApplications = studentApplications.filter(app => 
+        app.status === 'selected' || app.status === 'hired' || app.status === 'offer_accepted'
+      );
+      
+      return {
+        id: student.id,
+        userId: student.user_id,
+        name: student.first_name,
+        email: student.college_email,
+        personalEmail: student.personal_email,
+        phone: student.mobile_number,
+        branch: student.branch,
+        cgpa: student.ug_percentage ? (parseFloat(student.ug_percentage.toString()) / 10).toFixed(2) : null,
+        ugPercentage: student.ug_percentage ? parseFloat(student.ug_percentage.toString()).toFixed(2) : null,
+        isPlaced: placedApplications.length > 0,
+        applicationCount: studentApplications.length,
+        collegeRegNo: student.college_reg_no,
+        dateOfBirth: student.date_of_birth,
+        gender: student.gender,
+        isPWD: student.is_pwd,
+        hasActiveBacklogs: student.has_active_backlogs,
+        resumeUrl: student.resume_url,
+        placementStatus: student.placement_status,
+        createdAt: student.created_at,
+        updatedAt: student.updated_at
+      };
+    });
+    
     res.json({ students });
   } catch (error: any) {
     console.error("Get admin students error:", error);

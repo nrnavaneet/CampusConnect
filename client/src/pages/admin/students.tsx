@@ -200,7 +200,7 @@ export default function AdminStudents() {
                   <div className="flex-1 min-w-0">
                     <CardTitle className="text-lg mb-1 line-clamp-1">{student.name || "Unknown Student"}</CardTitle>
                     <p className="text-muted-foreground text-sm">
-                      {student.branch || "No Branch"} • {student.year || "Unknown Year"}
+                      {student.branch || "No Branch"} • Final Year
                     </p>
                   </div>
                   <Badge 
@@ -230,9 +230,14 @@ export default function AdminStudents() {
                     <FileText className="w-4 h-4 mr-2 flex-shrink-0" />
                     <span>{student.applicationCount || 0} Applications</span>
                   </div>
+                  
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <UserCheck className="w-4 h-4 mr-2 flex-shrink-0" />
+                    <span>Reg: {student.collegeRegNo || "N/A"}</span>
+                  </div>
                 </div>
 
-                {student.skills && (
+                {student.skills && student.skills.length > 0 && (
                   <div className="flex flex-wrap gap-1">
                     {student.skills.slice(0, 3).map((skill: string, index: number) => (
                       <Badge key={index} variant="outline" className="text-xs">
@@ -249,10 +254,10 @@ export default function AdminStudents() {
 
                 <div className="flex flex-col gap-2 pt-4 border-t">
                   <div className="grid grid-cols-2 gap-2">
-                    <span className="text-xs text-muted-foreground">CGPA:</span>
-                    <span className="text-xs font-medium">{student.cgpa || "N/A"}</span>
-                    <span className="text-xs text-muted-foreground">12th:</span>
-                    <span className="text-xs font-medium">{student.percentage12th || "N/A"}%</span>
+                    <span className="text-xs text-muted-foreground">UG %:</span>
+                    <span className="text-xs font-medium">{student.ugPercentage || "N/A"}%</span>
+                    <span className="text-xs text-muted-foreground">Branch:</span>
+                    <span className="text-xs font-medium">{student.branch || "N/A"}</span>
                   </div>
                   
                   <Button size="sm" className="w-full gap-2 mt-2">
