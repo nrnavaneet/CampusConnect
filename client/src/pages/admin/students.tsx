@@ -51,10 +51,6 @@ export default function AdminStudents() {
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" size="lg" className="gap-2">
-            <UserCheck className="w-5 h-5" />
-            Verify Students
-          </Button>
           <Button size="lg" className="gap-2">
             <Download className="w-5 h-5" />
             Export Data

@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { JobForm } from "@/components/admin/job-form";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash, Eye, Calendar, MapPin, DollarSign } from "lucide-react";
+import { Plus, Edit, Trash, Eye, Calendar, MapPin, IndianRupee } from "lucide-react";
 import { format } from "date-fns";
 import type { Job } from "@shared/schema";
 
@@ -176,7 +176,7 @@ export default function AdminJobs() {
                     
                     {job.packageRange && (
                       <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                        <DollarSign className="w-4 h-4 mr-2" />
+                        <IndianRupee className="w-4 h-4 mr-2" />
                         {job.packageRange}
                       </div>
                     )}

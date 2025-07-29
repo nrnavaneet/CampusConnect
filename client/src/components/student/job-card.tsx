@@ -8,7 +8,7 @@ import {
   Building2, 
   MapPin, 
   Calendar, 
-  DollarSign, 
+  IndianRupee, 
   GraduationCap, 
   Users, 
   CheckCircle, 
@@ -67,10 +67,7 @@ export function JobCard({ job, student, hasApplied = false, applicationStatus, o
 
   const applyMutation = useMutation({
     mutationFn: async () => {
-      return apiRequest("/api/applications", {
-        method: "POST",
-        body: { jobId: job.id },
-      });
+      return apiRequest("/api/applications", "POST", { jobId: job.id });
     },
     onSuccess: () => {
       toast({
@@ -167,7 +164,7 @@ export function JobCard({ job, student, hasApplied = false, applicationStatus, o
           
           {job.packageRange && (
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
-              <DollarSign className="w-3 h-3" />
+              <IndianRupee className="w-3 h-3" />
               <span>{job.packageRange}</span>
             </div>
           )}

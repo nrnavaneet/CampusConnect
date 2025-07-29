@@ -112,10 +112,6 @@ export default function AdminDashboard() {
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <Button variant="outline" size="lg" className="gap-2">
-            <Calendar className="w-5 h-5" />
-            Schedule Event
-          </Button>
           <Dialog open={isJobDialogOpen} onOpenChange={setIsJobDialogOpen}>
             <DialogTrigger asChild>
               <Button size="lg" className="gap-2 bg-gradient-to-r from-primary to-secondary hover:opacity-90">

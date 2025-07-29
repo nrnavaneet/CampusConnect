@@ -177,6 +177,28 @@ router.put("/api/student/profile", requireAuth, async (req, res) => {
   }
 });
 
+// Helper function to transform job data from snake_case to camelCase
+const transformJobData = (job: any) => {
+  return {
+    id: job.id,
+    title: job.title,
+    company: job.company,
+    description: job.description,
+    location: job.location,
+    packageRange: job.package_range,
+    minUGPercentage: job.min_ug_percentage,
+    allowBacklogs: job.allow_backlogs,
+    eligibleBranches: job.eligible_branches,
+    skills: job.skills,
+    deadline: job.deadline,
+    isActive: job.is_active,
+    countsAsOffer: job.counts_as_offer,
+    timeline: job.timeline,
+    createdAt: job.created_at,
+    updatedAt: job.updated_at
+  };
+};
+
 // Job Routes
 router.get("/api/jobs", requireAuth, async (req, res) => {
   try {
@@ -185,7 +207,8 @@ router.get("/api/jobs", requireAuth, async (req, res) => {
     // For now, get all jobs and filter on frontend if needed
     // TODO: Add filtering support in storage layer
     const jobs = await storage.getAllJobs();
-    res.json({ jobs });
+    const transformedJobs = jobs.map(transformJobData);
+    res.json({ jobs: transformedJobs });
   } catch (error: any) {
     console.error("Get jobs error:", error);
     res.status(500).json({ error: "Failed to get jobs" });
@@ -198,7 +221,8 @@ router.get("/api/jobs/:id", requireAuth, async (req, res) => {
     if (!job) {
       return res.status(404).json({ error: "Job not found" });
     }
-    res.json({ job });
+    const transformedJob = transformJobData(job);
+    res.json({ job: transformedJob });
   } catch (error: any) {
     console.error("Get job error:", error);
     res.status(500).json({ error: "Failed to get job" });
@@ -224,7 +248,8 @@ router.post("/api/jobs", requireAdmin, async (req, res) => {
     };
     
     const job = await storage.createJob(transformedData as any);
-    res.json({ job });
+    const transformedJob = transformJobData(job);
+    res.json({ job: transformedJob });
   } catch (error: any) {
     console.error("Create job error:", error);
     res.status(400).json({ error: error.message || "Failed to create job" });
@@ -273,7 +298,8 @@ router.put("/api/jobs/:id", requireAdmin, async (req, res) => {
     }
     
     const job = await storage.updateJob(req.params.id, dbData);
-    res.json({ job });
+    const transformedJob = transformJobData(job);
+    res.json({ job: transformedJob });
   } catch (error: any) {
     console.error("Update job error:", error);
     res.status(500).json({ error: "Failed to update job" });

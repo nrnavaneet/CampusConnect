@@ -7,10 +7,14 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { JobForm } from "@/components/admin/job-form";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash, Eye, Calendar, MapPin, DollarSign, Briefcase, Building } from "lucide-react";
+import { Plus, Edit, Trash, Eye, Calendar, MapPin, IndianRupee, Briefcase, Building } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "wouter";
 import type { Job } from "@shared/schema";
+
+interface JobWithTypedBranches extends Omit<Job, 'eligibleBranches'> {
+  eligibleBranches?: string[] | null;
+}
 
 export default function AdminJobs() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -67,7 +71,7 @@ export default function AdminJobs() {
     },
   });
 
-  const jobs = (jobsData?.jobs || []) as Job[];
+  const jobs = (jobsData?.jobs || []) as JobWithTypedBranches[];
 
   const handleDeleteJob = (jobId: string) => {
     if (confirm("Are you sure you want to delete this job? This action cannot be undone.")) {
@@ -140,7 +144,7 @@ export default function AdminJobs() {
       </div>
 
       {/* Stats Summary */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <Card className="hover:shadow-md transition-shadow border-l-4 border-l-blue-500">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
@@ -182,22 +186,6 @@ export default function AdminJobs() {
             </div>
           </CardContent>
         </Card>
-        
-        <Card className="hover:shadow-md transition-shadow border-l-4 border-l-purple-500">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                <DollarSign className="w-5 h-5 text-purple-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">This Month</p>
-                <p className="text-xl font-bold">{jobs.filter(job => 
-                  new Date(job.createdAt).getMonth() === new Date().getMonth()
-                ).length}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Jobs Grid */}
@@ -224,8 +212,8 @@ export default function AdminJobs() {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {jobs.map((job) => (
-            <Card key={job.id} className="hover:shadow-lg transition-all hover:scale-105 duration-200">
-              <CardHeader className="pb-4">
+            <Card key={job.id} className="hover:shadow-lg transition-all hover:scale-[1.02] duration-200 flex flex-col h-full">
+              <CardHeader className="pb-4 flex-shrink-0">
                 <div className="flex justify-between items-start gap-3">
                   <div className="flex-1 min-w-0">
                     <CardTitle className="text-lg mb-2 line-clamp-2">{job.title}</CardTitle>
@@ -242,8 +230,8 @@ export default function AdminJobs() {
                 </div>
               </CardHeader>
               
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
+              <CardContent className="space-y-4 flex-1 flex flex-col">
+                <div className="space-y-2 flex-1">
                   <div className="flex items-center text-sm text-muted-foreground">
                     <Calendar className="w-4 h-4 mr-2 flex-shrink-0" />
                     <span className="truncate">Deadline: {format(new Date(job.deadline), 'MMM dd, yyyy')}</span>
@@ -258,22 +246,22 @@ export default function AdminJobs() {
                   
                   {job.packageRange && (
                     <div className="flex items-center text-sm text-muted-foreground">
-                      <DollarSign className="w-4 h-4 mr-2 flex-shrink-0" />
+                      <IndianRupee className="w-4 h-4 mr-2 flex-shrink-0" />
                       <span className="truncate">{job.packageRange}</span>
                     </div>
                   )}
                 </div>
 
-                {job.eligibleBranches && (
+                {job.eligibleBranches && Array.isArray(job.eligibleBranches) && job.eligibleBranches.length > 0 && (
                   <div className="flex flex-wrap gap-1">
-                    {(job.eligibleBranches as string[]).slice(0, 3).map((branch, index) => (
-                      <Badge key={index} variant="outline" className="text-xs">
+                    {job.eligibleBranches.slice(0, 3).map((branch, index) => (
+                      <Badge key={`branch-${index}`} variant="outline" className="text-xs">
                         {branch}
                       </Badge>
                     ))}
-                    {(job.eligibleBranches as string[]).length > 3 && (
+                    {job.eligibleBranches.length > 3 && (
                       <Badge variant="outline" className="text-xs">
-                        +{(job.eligibleBranches as string[]).length - 3} more
+                        +{job.eligibleBranches.length - 3} more
                       </Badge>
                     )}
                   </div>
@@ -285,13 +273,13 @@ export default function AdminJobs() {
                   </p>
                 )}
 
-                <div className="flex flex-col gap-2 pt-4 border-t">
+                <div className="flex flex-col gap-2 pt-4 border-t mt-auto">
                   <div className="flex gap-2">
                     <Button
                       size="sm"
                       variant="outline"
                       className="flex-1"
-                      onClick={() => handleToggleStatus(job.id, job.isActive)}
+                      onClick={() => handleToggleStatus(job.id, job.isActive || false)}
                       disabled={toggleJobStatusMutation.isPending}
                     >
                       {job.isActive ? "Deactivate" : "Activate"}

@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar, MapPin, Building2, DollarSign, GraduationCap, Clock, Users, Code } from "lucide-react";
+import { Calendar, MapPin, Building2, IndianRupee, GraduationCap, Clock, Users, Code } from "lucide-react";
 
 const jobSchema = z.object({
   title: z.string().min(1, "Job title is required"),
@@ -267,7 +267,7 @@ export function JobForm({ onSuccess }: JobFormProps) {
 
                 <div className="space-y-2">
                   <Label htmlFor="packageRange" className="text-sm font-medium flex items-center gap-1">
-                    <DollarSign className="w-4 h-4" />
+                    <IndianRupee className="w-4 h-4" />
                     Package Range <span className="text-gray-500">(Optional)</span>
                   </Label>
                   <Input
