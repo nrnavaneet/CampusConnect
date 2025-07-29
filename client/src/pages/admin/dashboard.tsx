@@ -123,7 +123,7 @@ export default function AdminDashboard() {
                 Add Job
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto p-0">
               <JobForm onSuccess={() => setIsJobDialogOpen(false)} />
             </DialogContent>
           </Dialog>
@@ -165,84 +165,96 @@ export default function AdminDashboard() {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         <Card className="hover:shadow-md transition-shadow border-l-4 border-l-blue-500">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-xl">
-                <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+          <CardContent className="p-4">
+            <div className="flex flex-col space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                  <Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground font-medium">Total Students</p>
-                <p className="text-2xl font-bold">{statsLoading ? "..." : stats.totalStudents}</p>
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground font-medium">Total Students</p>
+                <p className="text-xl font-bold">{statsLoading ? "..." : stats.totalStudents}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="hover:shadow-md transition-shadow border-l-4 border-l-green-500">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-green-100 dark:bg-green-900 rounded-xl">
-                <Briefcase className="w-6 h-6 text-green-600 dark:text-green-400" />
+          <CardContent className="p-4">
+            <div className="flex flex-col space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
+                  <Briefcase className="w-5 h-5 text-green-600 dark:text-green-400" />
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground font-medium">Total Jobs</p>
-                <p className="text-2xl font-bold">{statsLoading ? "..." : stats.totalJobs}</p>
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground font-medium">Total Jobs</p>
+                <p className="text-xl font-bold">{statsLoading ? "..." : stats.totalJobs}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="hover:shadow-md transition-shadow border-l-4 border-l-orange-500">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-orange-100 dark:bg-orange-900 rounded-xl">
-                <FileText className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+          <CardContent className="p-4">
+            <div className="flex flex-col space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-lg">
+                  <FileText className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground font-medium">Applications</p>
-                <p className="text-2xl font-bold">{statsLoading ? "..." : stats.totalApplications}</p>
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground font-medium">Applications</p>
+                <p className="text-xl font-bold">{statsLoading ? "..." : stats.totalApplications}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="hover:shadow-md transition-shadow border-l-4 border-l-purple-500">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-xl">
-                <TrendingUp className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+          <CardContent className="p-4">
+            <div className="flex flex-col space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                  <TrendingUp className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground font-medium">Active Jobs</p>
-                <p className="text-2xl font-bold">{statsLoading ? "..." : stats.activeJobs}</p>
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground font-medium">Active Jobs</p>
+                <p className="text-xl font-bold">{statsLoading ? "..." : stats.activeJobs}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="hover:shadow-md transition-shadow border-l-4 border-l-emerald-500">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-emerald-100 dark:bg-emerald-900 rounded-xl">
-                <UserCheck className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+          <CardContent className="p-4">
+            <div className="flex flex-col space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="p-2 bg-emerald-100 dark:bg-emerald-900 rounded-lg">
+                  <UserCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground font-medium">Placed</p>
-                <p className="text-2xl font-bold">{statsLoading ? "..." : stats.placedStudents}</p>
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground font-medium">Placed</p>
+                <p className="text-xl font-bold">{statsLoading ? "..." : stats.placedStudents}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="hover:shadow-md transition-shadow border-l-4 border-l-yellow-500">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-xl">
-                <AlertCircle className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+          <CardContent className="p-4">
+            <div className="flex flex-col space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
+                  <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground font-medium">Pending</p>
-                <p className="text-2xl font-bold">{statsLoading ? "..." : stats.pendingApplications}</p>
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground font-medium">Pending</p>
+                <p className="text-xl font-bold">{statsLoading ? "..." : stats.pendingApplications}</p>
               </div>
             </div>
           </CardContent>
@@ -284,7 +296,16 @@ export default function AdminDashboard() {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{activity.description}</p>
                       <p className="text-xs text-muted-foreground">
-                        {format(new Date(activity.timestamp), "MMM dd, yyyy 'at' HH:mm")}
+                        {(() => {
+                          try {
+                            const date = new Date(activity.timestamp);
+                            return isNaN(date.getTime()) 
+                              ? "Just now" 
+                              : format(date, "MMM dd, yyyy 'at' HH:mm");
+                          } catch {
+                            return "Just now";
+                          }
+                        })()}
                       </p>
                     </div>
                   </div>

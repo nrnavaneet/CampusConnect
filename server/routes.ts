@@ -207,8 +207,23 @@ router.get("/api/jobs/:id", requireAuth, async (req, res) => {
 
 router.post("/api/jobs", requireAdmin, async (req, res) => {
   try {
-    const validatedData = insertJobSchema.parse(req.body);
-    const job = await storage.createJob(validatedData);
+    // Transform camelCase frontend data to snake_case backend data
+    const transformedData = {
+      title: req.body.title,
+      company: req.body.company,
+      description: req.body.description || null,
+      location: req.body.location || null,
+      package_range: req.body.packageRange || null,
+      min_ug_percentage: req.body.minUGPercentage || null,
+      allow_backlogs: req.body.allowBacklogs ?? false,
+      eligible_branches: req.body.eligibleBranches || null,
+      skills: req.body.skills || null,
+      deadline: req.body.deadline ? new Date(req.body.deadline) : req.body.deadline,
+      counts_as_offer: req.body.countsAsOffer ?? true,
+      is_active: req.body.isActive ?? true
+    };
+    
+    const job = await storage.createJob(transformedData as any);
     res.json({ job });
   } catch (error: any) {
     console.error("Create job error:", error);
@@ -218,7 +233,46 @@ router.post("/api/jobs", requireAdmin, async (req, res) => {
 
 router.put("/api/jobs/:id", requireAdmin, async (req, res) => {
   try {
-    const job = await storage.updateJob(req.params.id, req.body);
+    // Transform deadline from ISO string to Date object if needed
+    let requestData = {
+      ...req.body,
+      deadline: req.body.deadline ? new Date(req.body.deadline) : req.body.deadline
+    };
+    
+    // Transform camelCase to snake_case for database columns
+    const dbData: any = {};
+    for (const [key, value] of Object.entries(requestData)) {
+      switch (key) {
+        case 'isActive':
+          dbData.is_active = value;
+          break;
+        case 'countsAsOffer':
+          dbData.counts_as_offer = value;
+          break;
+        case 'allowBacklogs':
+          dbData.allow_backlogs = value;
+          break;
+        case 'minUGPercentage':
+          dbData.min_ug_percentage = value;
+          break;
+        case 'packageRange':
+          dbData.package_range = value;
+          break;
+        case 'eligibleBranches':
+          dbData.eligible_branches = value;
+          break;
+        case 'createdAt':
+          dbData.created_at = value;
+          break;
+        case 'updatedAt':
+          dbData.updated_at = value;
+          break;
+        default:
+          dbData[key] = value;
+      }
+    }
+    
+    const job = await storage.updateJob(req.params.id, dbData);
     res.json({ job });
   } catch (error: any) {
     console.error("Update job error:", error);
@@ -260,20 +314,20 @@ router.post("/api/applications", requireAuth, async (req, res) => {
       return res.status(404).json({ error: "Job not found" });
     }
 
-    if (!job.isActive) {
+    if (!job.is_active) {
       return res.status(400).json({ error: "Job is no longer active" });
     }
 
     // Check eligibility criteria
-    if (job.minUGPercentage && student.ugPercentage < job.minUGPercentage) {
+    if (job.min_ug_percentage && student.ugPercentage < job.min_ug_percentage) {
       return res.status(400).json({ error: "Does not meet minimum percentage requirement" });
     }
 
-    if (!job.allowBacklogs && student.hasActiveBacklogs) {
+    if (!job.allow_backlogs && student.hasActiveBacklogs) {
       return res.status(400).json({ error: "Active backlogs not allowed for this position" });
     }
 
-    if (job.eligibleBranches && !job.eligibleBranches.includes(student.branch)) {
+    if (job.eligible_branches && !job.eligible_branches.includes(student.branch)) {
       return res.status(400).json({ error: "Branch not eligible for this position" });
     }
 
@@ -418,6 +472,98 @@ router.put("/api/grievances/:id", requireAdmin, async (req, res) => {
   } catch (error: any) {
     console.error("Update grievance error:", error);
     res.status(500).json({ error: "Failed to update grievance" });
+  }
+});
+
+// Admin Stats Routes
+router.get("/api/admin/stats", requireAdmin, async (req, res) => {
+  try {
+    const jobs = await storage.getAllJobs();
+    const students = await storage.getAllStudentDetails();
+    const applications = await storage.getAllApplications();
+
+    // Get unique companies count
+    const uniqueCompanies = new Set(jobs.map(job => job.company)).size;
+    
+    // Get this month's jobs (created in current month)
+    const now = new Date();
+    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const thisMonthJobs = jobs.filter(job => {
+      const createdDate = new Date(job.created_at);
+      return createdDate >= firstDayOfMonth;
+    }).length;
+
+    const stats = {
+      totalStudents: students.length,
+      totalJobs: jobs.length,
+      totalApplications: applications.length,
+      activeJobs: jobs.filter(job => job.is_active).length, // Fix: use snake_case
+      placedStudents: applications.filter(app => app.status === 'selected').length,
+      pendingApplications: applications.filter(app => app.status === 'pending').length,
+      uniqueCompanies,
+      thisMonthJobs,
+    };
+
+    res.json({ stats });
+  } catch (error: any) {
+    console.error("Get admin stats error:", error);
+    res.status(500).json({ error: "Failed to get admin stats" });
+  }
+});
+
+router.get("/api/admin/activities", requireAdmin, async (req, res) => {
+  try {
+    // Get recent activities (last 10)
+    const applications = await storage.getAllApplications();
+    const jobs = await storage.getAllJobs();
+    
+    const activities = [
+      ...applications.slice(-5).map(app => ({
+        id: `app-${app.id}`,
+        type: "application",
+        description: `New application submitted for ${app.jobId}`,
+        timestamp: app.appliedAt || app.updated_at || new Date().toISOString(),
+      })),
+      ...jobs.slice(-5).map(job => ({
+        id: `job-${job.id}`,
+        type: "job_created",
+        description: `New job posted: ${job.title} at ${job.company}`,
+        timestamp: job.created_at || job.updated_at || new Date().toISOString(),
+      }))
+    ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 10);
+
+    res.json({ activities });
+  } catch (error: any) {
+    console.error("Get admin activities error:", error);
+    res.status(500).json({ error: "Failed to get admin activities" });
+  }
+});
+
+router.get("/api/admin/students", requireAdmin, async (req, res) => {
+  try {
+    const students = await storage.getAllStudentDetails();
+    res.json({ students });
+  } catch (error: any) {
+    console.error("Get admin students error:", error);
+    res.status(500).json({ error: "Failed to get students" });
+  }
+});
+
+router.get("/api/admin/applications/stats", requireAdmin, async (req, res) => {
+  try {
+    const applications = await storage.getAllApplications();
+    
+    const stats = {
+      total: applications.length,
+      pending: applications.filter(app => app.status === 'pending' || app.status === 'applied').length,
+      approved: applications.filter(app => app.status === 'selected' || app.status === 'shortlisted').length,
+      rejected: applications.filter(app => app.status === 'rejected').length,
+    };
+
+    res.json({ stats });
+  } catch (error: any) {
+    console.error("Get admin applications stats error:", error);
+    res.status(500).json({ error: "Failed to get applications stats" });
   }
 });
 

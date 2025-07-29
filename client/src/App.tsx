@@ -70,12 +70,6 @@ function Navigation() {
             <div className="hidden md:flex items-center space-x-6">
               {isAdmin ? (
                 <>
-                  <Link href="/admin/dashboard">
-                    <Button variant="ghost" className="text-gray-700 dark:text-gray-300 hover:text-primary">
-                      <Briefcase className="w-4 h-4 mr-2" />
-                      Dashboard
-                    </Button>
-                  </Link>
                 </>
               ) : (
                 <>
