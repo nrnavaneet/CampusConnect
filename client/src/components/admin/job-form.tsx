@@ -64,16 +64,17 @@ export function JobForm({ onSuccess }: JobFormProps) {
   });
 
   const branches = [
-    { value: "CSE", label: "Computer Science Engineering" },
-    { value: "ISE", label: "Information Science Engineering" },
-    { value: "ECE", label: "Electronics & Communication" },
-    { value: "EEE", label: "Electrical & Electronics" },
-    { value: "ME", label: "Mechanical Engineering" },
-    { value: "CE", label: "Civil Engineering" },
-    { value: "AIML", label: "AI & Machine Learning" },
-    { value: "Robotics", label: "Robotics Engineering" },
+    { value: "CSE", label: "Computer Science and Engineering" },
+    { value: "ISE", label: "Information Science and Engineering" },
+    { value: "MC", label: "Mathematics and Computing" },
+    { value: "AIML", label: "AI and Machine Learning" },
     { value: "Aerospace", label: "Aerospace Engineering" },
     { value: "Automotive", label: "Automotive Engineering" },
+    { value: "EEE", label: "Electrical and Electronics Engineering" },
+    { value: "ECE", label: "Electronics and Communication Engineering" },
+    { value: "Civil", label: "Civil Engineering" },
+    { value: "Mechanical", label: "Mechanical Engineering" },
+    { value: "Robotics", label: "Robotics Engineering" },
   ];
 
   const selectedBranches = watch("eligibleBranches") || [];

@@ -34,7 +34,7 @@ export const studentDetails = pgTable("student_details", {
   personalEmail: text("personal_email").notNull(),
   mobileNumber: text("mobile_number").notNull(),
   isPWD: boolean("is_pwd").notNull(),
-  branch: text("branch", { enum: ["CSE", "ISE", "AIML", "MC", "EEE", "ECE", "Civil", "Mechanical", "Robotics", "Aerospace", "Automotive"] }).notNull(),
+  branch: text("branch", { enum: ["CSE", "ISE", "MC", "AIML", "Aerospace", "Automotive", "EEE", "ECE", "Civil", "Mechanical", "Robotics"] }).notNull(),
   ugPercentage: decimal("ug_percentage", { precision: 5, scale: 2 }).notNull(),
   hasActiveBacklogs: boolean("has_active_backlogs").notNull(),
   resumeUrl: text("resume_url"),

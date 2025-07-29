@@ -40,7 +40,7 @@ const registerSchema = z.object({
   // Step 3: Academic Information
   isPWD: z.boolean(),
   branch: z.enum([
-    "CSE", "ISE", "AIML", "MC", "EEE", "ECE", "Civil", "Mechanical", "Robotics", "Aerospace", "Automotive"
+    "CSE", "ISE", "MC", "AIML", "Aerospace", "Automotive", "EEE", "ECE", "Civil", "Mechanical", "Robotics"
   ], { required_error: "Please select your branch" }),
   ugPercentage: z.string()
     .refine((val) => {
@@ -338,17 +338,17 @@ export function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFormProps) 
                     <SelectValue placeholder="Select your branch" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="CSE">Computer Science Engineering</SelectItem>
-                    <SelectItem value="ECE">Electronics & Communication</SelectItem>
-                    <SelectItem value="EEE">Electrical & Electronics</SelectItem>
-                    <SelectItem value="MECH">Mechanical Engineering</SelectItem>
-                    <SelectItem value="CIVIL">Civil Engineering</SelectItem>
-                    <SelectItem value="AERO">Aeronautical Engineering</SelectItem>
-                    <SelectItem value="CHEM">Chemical Engineering</SelectItem>
-                    <SelectItem value="IT">Information Technology</SelectItem>
-                    <SelectItem value="AIDS">AI & Data Science</SelectItem>
-                    <SelectItem value="CSAI">CS - Artificial Intelligence</SelectItem>
-                    <SelectItem value="CSBS">CS - Business Systems</SelectItem>
+                    <SelectItem value="CSE">Computer Science and Engineering</SelectItem>
+                    <SelectItem value="ISE">Information Science and Engineering</SelectItem>
+                    <SelectItem value="MC">Mathematics and Computing</SelectItem>
+                    <SelectItem value="AIML">AI and Machine Learning</SelectItem>
+                    <SelectItem value="Aerospace">Aerospace Engineering</SelectItem>
+                    <SelectItem value="Automotive">Automotive Engineering</SelectItem>
+                    <SelectItem value="EEE">Electrical and Electronics Engineering</SelectItem>
+                    <SelectItem value="ECE">Electronics and Communication Engineering</SelectItem>
+                    <SelectItem value="Civil">Civil Engineering</SelectItem>
+                    <SelectItem value="Mechanical">Mechanical Engineering</SelectItem>
+                    <SelectItem value="Robotics">Robotics Engineering</SelectItem>
                   </SelectContent>
                 </Select>
                 {form.formState.errors.branch && (
