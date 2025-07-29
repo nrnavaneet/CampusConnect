@@ -17,6 +17,9 @@ import Home from "@/pages/home";
 import AuthPage from "@/pages/auth/auth-page";
 import StudentDashboard from "@/pages/student/dashboard";
 import AdminDashboard from "@/pages/admin/dashboard";
+import AdminJobs from "@/pages/admin/jobs";
+import AdminApplications from "@/pages/admin/applications";
+import AdminStudents from "@/pages/admin/students";
 import Grievance from "@/pages/grievance";
 
 function Navigation() {
@@ -177,6 +180,27 @@ function Router() {
         <Route path="/admin/dashboard">
           {isAuthenticated && isAdmin ? (
             <AdminDashboard />
+          ) : (
+            <div>Access denied</div>
+          )}
+        </Route>
+        <Route path="/admin/jobs">
+          {isAuthenticated && isAdmin ? (
+            <AdminJobs />
+          ) : (
+            <div>Access denied</div>
+          )}
+        </Route>
+        <Route path="/admin/applications">
+          {isAuthenticated && isAdmin ? (
+            <AdminApplications />
+          ) : (
+            <div>Access denied</div>
+          )}
+        </Route>
+        <Route path="/admin/students">
+          {isAuthenticated && isAdmin ? (
+            <AdminStudents />
           ) : (
             <div>Access denied</div>
           )}

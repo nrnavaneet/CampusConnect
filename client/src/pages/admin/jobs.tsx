@@ -7,8 +7,9 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { JobForm } from "@/components/admin/job-form";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash, Eye, Calendar, MapPin, DollarSign } from "lucide-react";
+import { Plus, Edit, Trash, Eye, Calendar, MapPin, DollarSign, Briefcase, Building } from "lucide-react";
 import { format } from "date-fns";
+import { Link } from "wouter";
 import type { Job } from "@shared/schema";
 
 export default function AdminJobs() {
@@ -18,6 +19,10 @@ export default function AdminJobs() {
 
   const { data: jobsData, isLoading } = useQuery({
     queryKey: ["/api/jobs"],
+    queryFn: async () => {
+      const response = await apiRequest("/api/jobs");
+      return response.json();
+    },
   });
 
   const deleteJobMutation = useMutation({
@@ -80,159 +85,241 @@ export default function AdminJobs() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-900 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center py-12">Loading jobs...</div>
+      <div className="space-y-8 p-6 max-w-7xl mx-auto">
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading jobs...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              Job Management
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Create and manage job postings
-            </p>
-          </div>
-          
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Create New Job
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-              <JobForm onSuccess={handleCreateSuccess} />
-            </DialogContent>
-          </Dialog>
+    <div className="space-y-8 p-6 max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            Job Management
+          </h1>
+          <p className="text-muted-foreground mt-2 text-lg">
+            Create and manage job postings for campus placements
+          </p>
         </div>
-
-        {jobs.length === 0 ? (
-          <Card>
-            <CardContent className="text-center py-12">
-              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Plus className="w-8 h-8 text-gray-400" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">No Jobs Created</h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
-                Start by creating your first job posting
-              </p>
-              <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Create Job
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                  <JobForm onSuccess={handleCreateSuccess} />
-                </DialogContent>
-              </Dialog>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {jobs.map((job) => (
-              <Card key={job.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg mb-2">{job.title}</CardTitle>
-                      <p className="text-gray-600 dark:text-gray-400 font-medium">
-                        {job.company}
-                      </p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Badge 
-                        variant={job.isActive ? "default" : "secondary"}
-                        className={job.isActive ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300" : ""}
-                      >
-                        {job.isActive ? "Active" : "Inactive"}
-                      </Badge>
-                    </div>
-                  </div>
-                </CardHeader>
-                
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      Deadline: {format(new Date(job.deadline), 'MMM dd, yyyy - hh:mm a')}
-                    </div>
-                    
-                    {job.location && (
-                      <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                        <MapPin className="w-4 h-4 mr-2" />
-                        {job.location}
-                      </div>
-                    )}
-                    
-                    {job.packageRange && (
-                      <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                        <DollarSign className="w-4 h-4 mr-2" />
-                        {job.packageRange}
-                      </div>
-                    )}
-
-                    {job.eligibleBranches && (
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {(job.eligibleBranches as string[]).map((branch, index) => (
-                          <Badge key={index} variant="outline" className="text-xs">
-                            {branch}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
-
-                    {job.description && (
-                      <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2 mt-2">
-                        {job.description}
-                      </p>
-                    )}
-
-                    <div className="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700">
-                      <div className="flex space-x-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleToggleStatus(job.id, job.isActive)}
-                          disabled={toggleJobStatusMutation.isPending}
-                        >
-                          {job.isActive ? "Deactivate" : "Activate"}
-                        </Button>
-                        
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="text-red-600 hover:text-red-700"
-                          onClick={() => handleDeleteJob(job.id)}
-                          disabled={deleteJobMutation.isPending}
-                        >
-                          <Trash className="w-4 h-4" />
-                        </Button>
-                      </div>
-                      
-                      <Button size="sm" asChild>
-                        <a href={`/admin/applications?job=${job.id}`}>
-                          <Eye className="w-4 h-4 mr-2" />
-                          View Applications
-                        </a>
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <DialogTrigger asChild>
+            <Button size="lg" className="gap-2 bg-gradient-to-r from-primary to-secondary hover:opacity-90">
+              <Plus className="w-5 h-5" />
+              Create New Job
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <JobForm onSuccess={handleCreateSuccess} />
+          </DialogContent>
+        </Dialog>
       </div>
+
+      {/* Navigation Tabs */}
+      <div className="flex flex-wrap gap-2 p-1 bg-muted rounded-lg">
+        <Link href="/admin/dashboard">
+          <Button variant="ghost" size="sm" className="gap-2">
+            <Building className="w-4 h-4" />
+            Dashboard
+          </Button>
+        </Link>
+        <Button variant="default" size="sm" className="gap-2">
+          <Briefcase className="w-4 h-4" />
+          Jobs
+        </Button>
+        <Link href="/admin/applications">
+          <Button variant="ghost" size="sm" className="gap-2">
+            <Eye className="w-4 h-4" />
+            Applications
+          </Button>
+        </Link>
+      </div>
+
+      {/* Stats Summary */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="hover:shadow-md transition-shadow border-l-4 border-l-blue-500">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                <Briefcase className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Total Jobs</p>
+                <p className="text-xl font-bold">{jobs.length}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="hover:shadow-md transition-shadow border-l-4 border-l-green-500">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
+                <Calendar className="w-5 h-5 text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Active Jobs</p>
+                <p className="text-xl font-bold">{jobs.filter(job => job.isActive).length}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="hover:shadow-md transition-shadow border-l-4 border-l-orange-500">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-lg">
+                <Building className="w-5 h-5 text-orange-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Companies</p>
+                <p className="text-xl font-bold">{new Set(jobs.map(job => job.company)).size}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="hover:shadow-md transition-shadow border-l-4 border-l-purple-500">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                <DollarSign className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">This Month</p>
+                <p className="text-xl font-bold">{jobs.filter(job => 
+                  new Date(job.createdAt).getMonth() === new Date().getMonth()
+                ).length}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Jobs Grid */}
+      {jobs.length === 0 ? (
+        <Card className="shadow-lg">
+          <CardContent className="text-center py-16">
+            <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Briefcase className="w-10 h-10 text-gray-400" />
+            </div>
+            <h3 className="text-2xl font-semibold mb-3">No Jobs Created</h3>
+            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+              Start by creating your first job posting to connect students with opportunities
+            </p>
+            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+              <DialogTrigger asChild>
+                <Button size="lg" className="gap-2">
+                  <Plus className="w-5 h-5" />
+                  Create Your First Job
+                </Button>
+              </DialogTrigger>
+            </Dialog>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          {jobs.map((job) => (
+            <Card key={job.id} className="hover:shadow-lg transition-all hover:scale-105 duration-200">
+              <CardHeader className="pb-4">
+                <div className="flex justify-between items-start gap-3">
+                  <div className="flex-1 min-w-0">
+                    <CardTitle className="text-lg mb-2 line-clamp-2">{job.title}</CardTitle>
+                    <p className="text-muted-foreground font-medium text-sm">
+                      {job.company}
+                    </p>
+                  </div>
+                  <Badge 
+                    variant={job.isActive ? "default" : "secondary"}
+                    className={job.isActive ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300" : ""}
+                  >
+                    {job.isActive ? "Active" : "Inactive"}
+                  </Badge>
+                </div>
+              </CardHeader>
+              
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Calendar className="w-4 h-4 mr-2 flex-shrink-0" />
+                    <span className="truncate">Deadline: {format(new Date(job.deadline), 'MMM dd, yyyy')}</span>
+                  </div>
+                  
+                  {job.location && (
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
+                      <span className="truncate">{job.location}</span>
+                    </div>
+                  )}
+                  
+                  {job.packageRange && (
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <DollarSign className="w-4 h-4 mr-2 flex-shrink-0" />
+                      <span className="truncate">{job.packageRange}</span>
+                    </div>
+                  )}
+                </div>
+
+                {job.eligibleBranches && (
+                  <div className="flex flex-wrap gap-1">
+                    {(job.eligibleBranches as string[]).slice(0, 3).map((branch, index) => (
+                      <Badge key={index} variant="outline" className="text-xs">
+                        {branch}
+                      </Badge>
+                    ))}
+                    {(job.eligibleBranches as string[]).length > 3 && (
+                      <Badge variant="outline" className="text-xs">
+                        +{(job.eligibleBranches as string[]).length - 3} more
+                      </Badge>
+                    )}
+                  </div>
+                )}
+
+                {job.description && (
+                  <p className="text-sm text-muted-foreground line-clamp-3">
+                    {job.description}
+                  </p>
+                )}
+
+                <div className="flex flex-col gap-2 pt-4 border-t">
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() => handleToggleStatus(job.id, job.isActive)}
+                      disabled={toggleJobStatusMutation.isPending}
+                    >
+                      {job.isActive ? "Deactivate" : "Activate"}
+                    </Button>
+                    
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      onClick={() => handleDeleteJob(job.id)}
+                      disabled={deleteJobMutation.isPending}
+                    >
+                      <Trash className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  
+                  <Link href={`/admin/applications?job=${job.id}`}>
+                    <Button size="sm" className="w-full gap-2">
+                      <Eye className="w-4 h-4" />
+                      View Applications
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

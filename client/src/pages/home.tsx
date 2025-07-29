@@ -30,7 +30,7 @@ export default function Home() {
                 </Button>
               </Link>
               <Link href="/auth">
-                <Button variant="outline" className="border-2 border-white text-white font-semibold px-8 py-4 rounded-xl hover:bg-white hover:text-primary transition-all transform hover:scale-105 shadow-lg btn-animate pulse-on-hover">
+                <Button variant="outline" className="border-2 border-white text-white bg-white/10 backdrop-blur-sm font-semibold px-8 py-4 rounded-xl hover:bg-white hover:text-primary transition-all transform hover:scale-105 shadow-lg btn-animate pulse-on-hover">
                   <UserPlus className="w-5 h-5 mr-2" />
                   Register Now
                 </Button>
