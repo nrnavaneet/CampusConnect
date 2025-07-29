@@ -4,6 +4,7 @@ import { LoginForm } from "@/components/auth/login-form";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GraduationCap, Building2 } from "lucide-react";
+import { useLocation } from "wouter";
 
 interface AuthPageProps {
   onAuthSuccess: () => void;
@@ -11,6 +12,7 @@ interface AuthPageProps {
 
 export default function AuthPage({ onAuthSuccess }: AuthPageProps) {
   const [activeTab, setActiveTab] = useState<string>("login");
+  const [, setLocation] = useLocation();
 
   const handleRegisterSuccess = () => {
     setActiveTab("login");
@@ -22,11 +24,17 @@ export default function AuthPage({ onAuthSuccess }: AuthPageProps) {
       <div className="w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-lg">
+            <div 
+              className="p-2 bg-primary/10 rounded-lg cursor-pointer hover:bg-primary/20 transition-colors"
+              onClick={() => setLocation("/")}
+            >
               <GraduationCap className="w-8 h-8 text-primary" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              <h1 
+                className="text-2xl font-bold text-gray-900 dark:text-white cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={() => setLocation("/")}
+              >
                 Campus Placement Portal
               </h1>
               <p className="text-sm text-muted-foreground">

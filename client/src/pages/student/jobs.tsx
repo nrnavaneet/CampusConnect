@@ -37,7 +37,7 @@ export default function StudentJobs() {
 
   const applyMutation = useMutation({
     mutationFn: async (jobId: string) => {
-      const response = await apiRequest("POST", "/api/applications", { jobId });
+      const response = await apiRequest("/api/applications", "POST", { jobId });
       return response.json();
     },
     onSuccess: () => {

@@ -56,7 +56,7 @@ export function GrievanceForm() {
 
   const submitGrievanceMutation = useMutation({
     mutationFn: async (data: GrievanceFormData) => {
-      const response = await apiRequest("POST", "/api/grievances", data);
+      const response = await apiRequest("/api/grievances", "POST", data);
       return response.json();
     },
     onSuccess: () => {

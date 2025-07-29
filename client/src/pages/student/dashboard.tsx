@@ -42,7 +42,7 @@ interface Application {
 
 export default function StudentDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterBranch, setFilterBranch] = useState("");
+  const [filterBranch, setFilterBranch] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
 
   // Fetch student profile
@@ -79,7 +79,7 @@ export default function StudentDashboard() {
     const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          job.company.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesBranch = !filterBranch || 
+    const matchesBranch = filterBranch === "all" || 
                          !job.eligibleBranches || 
                          job.eligibleBranches.length === 0 || 
                          job.eligibleBranches.includes(filterBranch);
@@ -219,7 +219,7 @@ export default function StudentDashboard() {
                 <SelectValue placeholder="Filter by branch" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Branches</SelectItem>
+                <SelectItem value="all">All Branches</SelectItem>
                 {branches.map((branch) => (
                   <SelectItem key={branch} value={branch}>
                     {branch}

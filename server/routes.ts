@@ -27,9 +27,6 @@ const requireAdmin = (req: any, res: any, next: any) => {
 // Authentication Routes
 router.post("/api/auth/register", async (req, res) => {
   try {
-    // Hash password
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
-
     // Check if email already exists
     const existingUser = await storage.getUserByEmail(req.body.collegeEmail);
     if (existingUser) {
@@ -39,7 +36,7 @@ router.post("/api/auth/register", async (req, res) => {
     // Create user first
     const user = await storage.createUser({
       email: req.body.collegeEmail,
-      password: hashedPassword,
+      password: req.body.password, // Let storage handle hashing
       role: "student"
     });
 
@@ -99,7 +96,7 @@ router.post("/api/auth/login", async (req, res) => {
     // Get additional user info based on role
     let userInfo = { ...user, password: undefined };
     if (user.role === "student") {
-      const studentDetails = await storage.getStudentByUserId(user.id);
+      const studentDetails = await storage.getStudentDetailsByUserId(user.id);
       userInfo = { ...userInfo, studentDetails };
     }
 
@@ -131,7 +128,7 @@ router.get("/api/auth/me", requireAuth, async (req, res) => {
 
     let userInfo = { ...user, password: undefined };
     if (user.role === "student") {
-      const studentDetails = await storage.getStudentByUserId(user.id);
+      const studentDetails = await storage.getStudentDetailsByUserId(user.id);
       userInfo = { ...userInfo, studentDetails };
     }
 
@@ -149,7 +146,7 @@ router.get("/api/student/profile", requireAuth, async (req, res) => {
       return res.status(403).json({ error: "Student access required" });
     }
 
-    const student = await storage.getStudentByUserId(req.user.id);
+    const student = await storage.getStudentDetailsByUserId(req.user.id);
     if (!student) {
       return res.status(404).json({ error: "Student profile not found" });
     }
@@ -167,7 +164,7 @@ router.put("/api/student/profile", requireAuth, async (req, res) => {
       return res.status(403).json({ error: "Student access required" });
     }
 
-    const student = await storage.getStudentByUserId(req.user.id);
+    const student = await storage.getStudentDetailsByUserId(req.user.id);
     if (!student) {
       return res.status(404).json({ error: "Student profile not found" });
     }
@@ -183,9 +180,11 @@ router.put("/api/student/profile", requireAuth, async (req, res) => {
 // Job Routes
 router.get("/api/jobs", requireAuth, async (req, res) => {
   try {
-    const { active } = req.query;
-    const filters = active !== undefined ? { isActive: active === "true" } : undefined;
-    const jobs = await storage.getJobs(filters);
+    const { status, branch, company } = req.query;
+    
+    // For now, get all jobs and filter on frontend if needed
+    // TODO: Add filtering support in storage layer
+    const jobs = await storage.getAllJobs();
     res.json({ jobs });
   } catch (error: any) {
     console.error("Get jobs error:", error);
@@ -244,7 +243,7 @@ router.post("/api/applications", requireAuth, async (req, res) => {
       return res.status(403).json({ error: "Student access required" });
     }
 
-    const student = await storage.getStudentByUserId(req.user.id);
+    const student = await storage.getStudentDetailsByUserId(req.user.id);
     if (!student) {
       return res.status(404).json({ error: "Student profile not found" });
     }
@@ -299,12 +298,12 @@ router.get("/api/applications/student", requireAuth, async (req, res) => {
       return res.status(403).json({ error: "Student access required" });
     }
 
-    const student = await storage.getStudentByUserId(req.user.id);
+    const student = await storage.getStudentDetailsByUserId(req.user.id);
     if (!student) {
       return res.status(404).json({ error: "Student profile not found" });
     }
 
-    const applications = await storage.getApplicationsByStudent(student.id);
+    const applications = await storage.getApplicationsByStudentId(student.id);
     res.json({ applications });
   } catch (error: any) {
     console.error("Get student applications error:", error);
@@ -387,7 +386,7 @@ router.post("/api/grievances", requireAuth, async (req, res) => {
 
     // Add student ID if logged in as student
     if (req.user.role === "student") {
-      const student = await storage.getStudentByUserId(req.user.id);
+      const student = await storage.getStudentDetailsByUserId(req.user.id);
       if (student) {
         validatedData.studentId = student.id;
       }

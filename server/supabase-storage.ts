@@ -62,9 +62,27 @@ export class SupabaseStorage {
 
   // Student details methods
   async createStudentDetails(data: InsertStudentDetails): Promise<StudentDetails> {
+    // Convert camelCase to snake_case for database
+    const dbData = {
+      user_id: data.userId,
+      first_name: data.firstName,
+      gender: data.gender,
+      college_reg_no: data.collegeRegNo,
+      date_of_birth: data.dateOfBirth,
+      college_email: data.collegeEmail,
+      personal_email: data.personalEmail,
+      mobile_number: data.mobileNumber,
+      is_pwd: data.isPWD,
+      branch: data.branch,
+      ug_percentage: data.ugPercentage,
+      has_active_backlogs: data.hasActiveBacklogs,
+      resume_url: data.resumeUrl || null,
+      placement_status: data.placementStatus || {}
+    };
+
     const { data: student, error } = await supabase
       .from('student_details')
-      .insert(data)
+      .insert(dbData)
       .select()
       .single();
     

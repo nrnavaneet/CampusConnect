@@ -58,7 +58,7 @@ export function ProfileForm() {
 
   const updateMutation = useMutation({
     mutationFn: async (data: ProfileFormData & { resumeUrl?: string }) => {
-      const response = await apiRequest("PUT", "/api/student/profile", data);
+      const response = await apiRequest("/api/student/profile", "PUT", data);
       return response.json();
     },
     onSuccess: () => {

@@ -76,7 +76,7 @@ export function JobForm({ onSuccess }: JobFormProps) {
         minUGPercentage: data.minUGPercentage || null,
       };
       
-      const response = await apiRequest("POST", "/api/jobs", jobData);
+      const response = await apiRequest("/api/jobs", "POST", jobData);
       return response.json();
     },
     onSuccess: () => {

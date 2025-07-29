@@ -1,5 +1,5 @@
 // Test database connection
-const postgres = require('postgres');
+import postgres from 'postgres';
 
 const connectionString = process.env.DATABASE_URL || "postgresql://postgres:Nava@2005@db.kcqmpjwlukoibwvpgzls.supabase.co:5432/postgres";
 

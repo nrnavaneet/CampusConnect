@@ -43,10 +43,8 @@ export function LoginForm({ onSuccess, onSwitchToRegister }: LoginFormProps) {
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginFormData) => {
-      return apiRequest("/api/auth/login", {
-        method: "POST",
-        body: data,
-      });
+      const response = await apiRequest("/api/auth/login", "POST", data);
+      return response.json();
     },
     onSuccess: (data) => {
       toast({
@@ -61,7 +59,7 @@ export function LoginForm({ onSuccess, onSwitchToRegister }: LoginFormProps) {
       if (data.user?.role === "admin") {
         window.location.href = "/admin/dashboard";
       } else {
-        onSuccess();
+        window.location.href = "/student/dashboard";
       }
     },
     onError: (error: any) => {

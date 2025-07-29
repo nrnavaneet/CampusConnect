@@ -22,7 +22,7 @@ export default function AdminJobs() {
 
   const deleteJobMutation = useMutation({
     mutationFn: async (jobId: string) => {
-      const response = await apiRequest("DELETE", `/api/jobs/${jobId}`, {});
+      const response = await apiRequest(`/api/jobs/${jobId}`, "DELETE", {});
       return response.json();
     },
     onSuccess: () => {
@@ -43,7 +43,7 @@ export default function AdminJobs() {
 
   const toggleJobStatusMutation = useMutation({
     mutationFn: async ({ jobId, isActive }: { jobId: string; isActive: boolean }) => {
-      const response = await apiRequest("PUT", `/api/jobs/${jobId}`, { isActive });
+      const response = await apiRequest(`/api/jobs/${jobId}`, "PUT", { isActive });
       return response.json();
     },
     onSuccess: () => {
