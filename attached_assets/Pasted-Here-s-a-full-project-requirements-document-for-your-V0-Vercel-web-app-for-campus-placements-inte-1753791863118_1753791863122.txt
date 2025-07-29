@@ -1,0 +1,202 @@
+Here’s a full project requirements document for your V0 (Vercel) web app for campus placements, integrating Supabase, PostgreSQL, Google Drive (for grievance handling only), and built with appropriate stack considerations. You can copy-paste this into V0 and start developing.
+
+⸻
+
+📄 Project: Campus Placement & Internship Portal
+
+🧑‍💻 Tech Stack
+	•	Frontend: React (via V0), TailwindCSS, Dark/Light Mode toggle, interactive UI (MCQs, mouse trails)
+	•	Backend: Supabase (Auth, DB, Storage), PostgreSQL
+	•	Storage: Supabase buckets (resume storage)
+	•	Sheets/Tracking: Supabase DB Tables with export options (CSV/Excel)
+	•	Optional Integrations: Google Drive (for grievances only)
+
+⸻
+
+1. 🔐 Authentication
+
+a. Login Page
+	•	Student Login/Register
+	•	Supabase Auth (Email/password)
+	•	Only allow users with email format: 22xxxxx@domain.com (validate 22 prefix)
+	•	Admin Login
+	•	Custom admin login with password protection
+	•	Optional: Hardcoded Supabase table for admin with hashed password
+
+⸻
+
+2. 👨‍🎓 Student Registration Setup (Post Login)
+
+a. Collect MCQ-style inputs:
+	•	First Name
+	•	Gender (Male/Female/Other)
+	•	College Reg No (e.g. 22ETCS001234) (Validate format)
+	•	PWD: Yes/No
+	•	Date of Birth
+	•	College Email ID
+	•	Personal Email
+	•	Mobile Number
+	•	Branch (dropdown)
+	•	UG Percentage
+	•	Active Backlogs: Yes/No
+	•	Resume Upload (PDF only, max size 2MB)
+
+🎯 Store in Supabase:
+
+	•	Table: student_details
+	•	Resume stored in:
+
+/placements/resumes/{branch}/{college_reg_no}.pdf
+
+
+	•	Resume name: {college_reg_no}.pdf
+
+⸻
+
+3. 🧾 Job & Internship Listings Page
+
+a. Three Sections:
+	•	✅ Active
+	•	📁 Ongoing
+	•	⏳ Upcoming
+
+b. Each Job Block
+	•	Company Logo
+	•	Job Title
+	•	Deadline Countdown
+	•	Eligibility Checker (auto logic from criteria vs profile)
+	•	If eligible → “View Details” page:
+	•	Full JD
+	•	Timeline Info (Application → Shortlist → Interview etc.)
+	•	Apply Button
+
+c. Apply Flow
+	•	Show resume preview + profile preview
+	•	Let user update info if needed (redirect to profile page)
+	•	If confirmed:
+	•	Add entry in new Supabase table: applications_{company_name} with all profile details + resume link
+	•	Also update student_details with this application info
+
+⸻
+
+4. 🧭 Track Application
+
+a. Job-wise Tracking:
+	•	Timeline View:
+
+Applied → Under Review → Shortlisted → Interview Scheduled → Selected/Rejected
+
+
+
+b. Store tracking in:
+	•	Table: application_status
+	•	Fields: student_reg_no, company_name, current_stage, timestamps
+
+⸻
+
+5. 📣 Grievance & Issue Reporting
+
+a. Contact Form:
+	•	Type of issue (Dropdown)
+	•	Message
+	•	Contact Email
+
+🔁 Store in Google Drive (folder: “Grievances”) or optionally Supabase grievance_reports table
+Also allow tracking of grievance status:
+
+	•	Submitted → In Progress → Resolved
+
+⸻
+
+6. 🛠 Admin Dashboard
+
+a. Admin Home
+	•	Add New Job/Internship
+	•	Job Fields:
+	•	Title
+	•	Description
+	•	Eligibility Criteria:
+	•	Min UG %
+	•	No Backlogs
+	•	Branches allowed
+	•	Package
+	•	Whether it counts as an offer
+	•	Timeline Stages & Dates
+
+🛠 Logic auto-calculates and creates application UI block and eligibility validator
+
+b. Applications View (per Job)
+	•	See applied students list
+	•	Resume preview/download
+	•	Action buttons:
+	•	Mark as Shortlisted
+	•	Selected
+	•	Rejected
+
+c. Grievance Admin Page
+	•	View grievances by:
+	•	Reg No / Name
+	•	Status
+	•	Update status inline (dropdown)
+
+⸻
+
+7. 📜 Placement Policy (Automated)
+	•	Max 3 job offers allowed
+	•	If one offer is accepted with a certain CTC, next job allowed only if:
+	•	CTC ≥ 2 × previous offer
+	•	Some jobs may be marked as Non-counting offers
+	•	This logic affects:
+	•	Student eligibility check
+	•	Placement record in student_details
+	•	Admin sees placement status on student profile
+
+⸻
+
+8. 👤 Student Profile Page
+	•	View/update all profile fields
+	•	Re-upload resume (deletes old one)
+	•	Automatically updates:
+	•	student_details
+	•	Replaces resume in Supabase
+	•	Placement Status Summary (Offers made, accepted, rejected)
+
+⸻
+
+9. 💡 Additional Features
+
+a. Themes
+	•	Light/Dark Mode toggle
+	•	Store preference locally
+
+b. Visuals & UX
+	•	Mouse Trail Animation
+	•	Interactive MCQs for form filling
+	•	Smooth transitions & loading states
+	•	Fully responsive
+
+c. Export Features
+	•	Export all data in Supabase tables (student_details, applications_, etc.) as downloadable CSV or Excel
+
+d. Notifications (Optional)
+	•	Use Supabase functions or third-party service for:
+	•	Application status changes
+	•	Grievance updates
+	•	Upcoming deadlines
+
+⸻
+
+10. 🧾 Supabase Tables Summary
+
+Table Name	Description
+student_details	Stores all student profile data
+applications_xxx	One per job, stores applications
+application_status	Tracks each student’s application
+grievance_reports	All submitted issues
+jobs	Stores job metadata & timelines
+admins (optional)	Admin credentials
+
+
+⸻
+
+Let me know if you want the SQL schema, Supabase setup script, or the V0 components designed!
